@@ -6,37 +6,47 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 
-namespace ParttrapDev.Controllers
+namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-        internal Stock Stock;
-        internal Stock.Product StockProduct;
 
-        List<Stock> StockList = new List<Stock>();
+        List<Model> StockList = new List<Model>();
+
 
         internal string Url = "";
         internal string StockId = "GOOGLE&relationId=4";
-        
+
         public ActionResult Index()
         {
-           
-            ViewBag.Product = GetProduct(Url, StockId);
 
-            //ViewBag.ProductTest = GetProductTest(Url + SttockId);
+            //ViewBag.Product = GetProduct(Url, StockId);
+            //ViewBag.ProductTest = GetProductTest(Url + StockId);
+
+            GetAnotherProduct(Url, StockId);
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
 
-            return View();
+            return View(StockList);
         }
 
+        public void GetAnotherProduct(string url, string id)
+        {
+            using (var client = new WebClient())
+            {
+                var json = client.DownloadString(url + id);
+                var serializer = new JavaScriptSerializer();
+                StockList.Add(serializer.Deserialize<Model>(json));
+            }
+        }
 
         public string GetProduct(string url, string stockcode)
         {
             //WebResponse response = request.GetResponse();
-            WebRequest request = WebRequest.Create(url+stockcode);
+            WebRequest request = WebRequest.Create(url + stockcode);
             Stream dataStream = request.GetResponse().GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
             string response = reader.ReadToEnd();
@@ -45,10 +55,9 @@ namespace ParttrapDev.Controllers
 
         }
 
-
-        string GetProductTest(string url)
+        public string GetProductTest(string url)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
             try
             {
                 WebResponse response = request.GetResponse();
@@ -72,7 +81,43 @@ namespace ParttrapDev.Controllers
         }
 
 
+        
+        public void Index(string url, string stockId)
+        {
+            WebClient c = new WebClient();
+            string downloadjson = url + stockId;
+            var json = c.DownloadString(downloadjson);
+            Model shiet = Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(json);
+
+            Model.Product shietSource = new Model.Product()
+            {
+                ProductID = 1,
+                Description = "desc test"
+            };
 
 
+        }
+
+
+        
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace ParttrapDev
+namespace jenpstock
 {
-    public class Stock
+    public class Model
     {
 
         public class Rootobject
         {
             public Product[] Property { get; set; }
+
         }
 
         public class Product
