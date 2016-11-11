@@ -8,12 +8,12 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Diagnostics;
 
 namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-
         List<Model> StockList = new List<Model>();
 
 
@@ -26,11 +26,14 @@ namespace jenpstock.Controllers
             //ViewBag.Product = GetProduct(Url, StockId);
             //ViewBag.ProductTest = GetProductTest(Url + StockId);
 
-            GetAnotherProduct(Url, StockId);
+            //GetAnotherProduct(Url, StockId);
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
 
-            return View(StockList);
+            Model.Product[] stockList= WeAreTesting(Url, StockId);
+            
+
+            return View(stockList);
         }
 
         public void GetAnotherProduct(string url, string id)
@@ -82,22 +85,21 @@ namespace jenpstock.Controllers
 
 
         
-        public void Index(string url, string stockId)
+        public Model.Product[] WeAreTesting(string url, string stockId)
         {
             WebClient c = new WebClient();
             string downloadjson = url + stockId;
             var json = c.DownloadString(downloadjson);
-            Model shiet = Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(json);
+            Rootobject shiet = Newtonsoft.Json.JsonConvert.DeserializeObject<Rootobject>(json);
 
-            Model.Product shietSource = new Model.Product()
-            {
-                ProductID = 1,
-                Description = "desc test"
-            };
+            //Model.Product shietSource = new Model.Product()
+            //{
+            //    ProductID = shiet.product.ProductID,
+            //    Description = shiet.Description
+            //};
 
-
+            return shiet.response;
         }
-
 
         
     }

@@ -5,14 +5,18 @@ using System.Web;
 
 namespace jenpstock
 {
+
+    public class Rootobject
+    {
+        //public Product[] Property { get; set; }
+
+        public Model.Product[] response { get; set; }
+
+    }
+
     public class Model
     {
 
-        public class Rootobject
-        {
-            public Product[] Property { get; set; }
-
-        }
 
         public class Product
         {
