@@ -4,29 +4,31 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-
         List<Model> StockList = new List<Model>();
 
 
-        internal string Url = "";
+        internal string Url = "http://one.dev.parttrap.com/catalog/getrelatedchildproducts/?stockCode=";
         internal string StockId = "GOOGLE&relationId=4";
 
         public ActionResult Index()
         {
 
-            //ViewBag.Product = GetProduct(Url, StockId);
+            ViewBag.Product = GetProduct(Url, StockId);
             //ViewBag.ProductTest = GetProductTest(Url + StockId);
+            // GetAnotherProduct(Url, StockId);
 
-            GetAnotherProduct(Url, StockId);
+
+
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
 
@@ -43,17 +45,82 @@ namespace jenpstock.Controllers
             }
         }
 
-        public string GetProduct(string url, string stockcode)
+
+
+
+
+        public JToken GetProduct(string url, string stockId)
         {
-            //WebResponse response = request.GetResponse();
-            WebRequest request = WebRequest.Create(url + stockcode);
+            WebRequest request = WebRequest.Create(url + stockId);
             Stream dataStream = request.GetResponse().GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
+
             string response = reader.ReadToEnd();
+            JArray jsonObj = (JArray)JsonConvert.DeserializeObject(response);
 
-            return (response);
+            Debug.WriteLine("Key" + "\t\t" + "Value");
 
+            foreach (var item in jsonObj)
+            {
+                Debug.WriteLine(item["ProductID"].ToString());
+            }
+
+
+            return jsonObj[0];
         }
+
+
+
+
+
+        //public string GetProduct(string url, string stockcode)
+        //{
+        //    //WebResponse response = request.GetResponse();
+        //    WebRequest request = WebRequest.Create(url + stockcode);
+        //    Stream dataStream = request.GetResponse().GetResponseStream();
+        //    StreamReader reader = new StreamReader(dataStream);
+        //    string response = reader.ReadToEnd();
+        //    string text = System.IO.File.ReadAllText(@"D:\dev\Github\jenpstock\jenpstock\Content\stock.txt");
+
+        //    Model.RootObject obj = JsonConvert.DeserializeObject<Model.RootObject>(text);
+
+        //    return text;
+
+        //}
+
+
+        //}
+
+
+
+        //public Model.Product GetProduct(string url, string stockcode)
+        //{
+        //    WebRequest request = WebRequest.Create(url + stockcode);
+        //    Stream dataStream = request.GetResponse().GetResponseStream();
+        //    StreamReader reader = new StreamReader(dataStream);
+        //    string response = reader.ReadToEnd();
+        //    Model.Product deserializedProduct = JsonConvert.DeserializeObject<Model.Product>(response);
+
+
+        //    return deserializedProduct;
+
+        //}
+
+
+
+
+        //public Model.Product GetProduct(string url, string stockcode)
+        //{
+
+        //    //WebResponse response = request.GetResponse();
+        //    WebRequest request = WebRequest.Create(url + stockcode);
+        //    Stream dataStream = request.GetResponse().GetResponseStream();
+        //    StreamReader reader = new StreamReader(dataStream);
+        //    string response = reader.ReadToEnd();
+        //    Model.Product deserializedProduct = JsonConvert.DeserializeObject<Model.Product>(response);
+
+        //    return deserializedProduct;
+        //}
 
         public string GetProductTest(string url)
         {
@@ -82,7 +149,7 @@ namespace jenpstock.Controllers
 
 
         
-        public void Index(string url, string stockId)
+        public void Test(string url, string stockId)
         {
             WebClient c = new WebClient();
             string downloadjson = url + stockId;

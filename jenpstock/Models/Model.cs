@@ -10,7 +10,8 @@ namespace jenpstock
 
         public class Rootobject
         {
-            public Product[] Property { get; set; }
+           // public Product[] Property { get; set; }
+            public Model response { get; set; }
 
         }
 
@@ -194,5 +195,8 @@ namespace jenpstock
             public string ImageUrl { get; set; }
         }
 
+        internal class RootObject
+        {
+        }
     }
 }
