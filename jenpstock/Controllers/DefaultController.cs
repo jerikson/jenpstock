@@ -12,7 +12,7 @@ namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-        internal string Url = "http://one.dev.parttrap.com/catalog/getrelatedchildproducts/?stockCode=";
+        internal string Url = "";
         internal string StockId = "GOOGLE&relationId=4";
 
         public ActionResult Index()
