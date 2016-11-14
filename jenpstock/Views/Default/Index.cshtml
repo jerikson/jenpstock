@@ -1,4 +1,8 @@
 ﻿@using jenpstock.Controllers
+<<<<<<< HEAD
+=======
+@model Newtonsoft.Json.Linq.JToken
+>>>>>>> 19f72b1da6ae4b3e76a6861d30c04196ee63f0d7
 
 @{
     Layout = null;
@@ -8,9 +12,9 @@
 <html>
 <head></head>
 <body>
-    <h3>Stock: @ViewBag.Stockcode</h3>
+    @*<h3>Stock: @ViewBag.Stockcode</h3>
     <h3>Result: @ViewBag.Product</h3>
-    <h3>Result2: @ViewBag.ProductTest</h3>
+    <h3>Result2: @ViewBag.ProductTest</h3>*@
     
     @*<ul>
         @foreach (Stock.Product sp in Model)
@@ -19,7 +23,10 @@
         }
     </ul>*@
     
-    
+    @foreach (var item in Model)
+    {
+        <p>@item</p>
+    }
 
 </body>
 </html>
