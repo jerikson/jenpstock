@@ -7,6 +7,8 @@ using System.Web.Script.Serialization;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace jenpstock.Controllers
 {
@@ -15,45 +17,43 @@ namespace jenpstock.Controllers
         internal string Url = "";
         internal string StockId = "GOOGLE&relationId=4";
 
+
         public ActionResult Index()
         {
-            JToken oneProduct = GetProduct(Url, StockId);
+            List<Model.Product> productList = GetProduct(Url, StockId);
 
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
             
-            return View(oneProduct);
+            return View(productList);
         }
 
-        public JToken GetProduct(string url, string stockId)
+        public List<Model.Product> GetProduct(string url, string stockId)
         {
+            List<JToken> productList = new List<JToken>();
             WebRequest request = WebRequest.Create(url + stockId);
             Stream dataStream = request.GetResponse().GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
 
             string response = reader.ReadToEnd();
             JArray jsonObj = (JArray)JsonConvert.DeserializeObject(response);
-            Debug.WriteLine("Key" + "\t\t" + "Value");
 
-            Model.Product dezerializedModel = (Model.Product)JsonConvert.DeserializeObject(reader.ReadToEnd(), typeof(Model.Product));
-            var products = JsonConvert.DeserializeObject(reader.ReadToEnd()) as JArray;
+            List<Model.Product> listan = new List<Model.Product>();
 
-
-
+            int index = 0;
             foreach (var item in jsonObj)
             {
-                Debug.WriteLine(item["ProductID"].ToString());
+                Model.Product a = (Model.Product)JsonConvert.DeserializeObject(jsonObj[index].ToString(), typeof(Model.Product));
+                listan.Add(a);
+                index++;
             }
-            return jsonObj[0];
+
+            return listan;
         }
     }
 
 
 }
-
-
-
-
 
 
 
