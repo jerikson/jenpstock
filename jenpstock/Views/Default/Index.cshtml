@@ -1,32 +1,30 @@
 ﻿@using jenpstock.Controllers
-<<<<<<< HEAD
-=======
-@model Newtonsoft.Json.Linq.JToken
->>>>>>> 19f72b1da6ae4b3e76a6861d30c04196ee63f0d7
 
+@model Newtonsoft.Json.Linq.JToken
 @{
     Layout = null;
 }
 
 <!DOCTYPE html>
 <html>
-<head></head>
-<body>
-    @*<h3>Stock: @ViewBag.Stockcode</h3>
-    <h3>Result: @ViewBag.Product</h3>
-    <h3>Result2: @ViewBag.ProductTest</h3>*@
-    
-    @*<ul>
-        @foreach (Stock.Product sp in Model)
-        {
-            <li>@sp.ProductID</li>
-        }
-    </ul>*@
-    
-    @foreach (var item in Model)
-    {
-        <p>@item</p>
-    }
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 
+</head>
+<body>
+    <div class="container">
+
+            @foreach (var item in Model)
+            {
+
+
+                <li class="list-group-item">@item</li>
+
+
+            }
+
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
 </body>
 </html>

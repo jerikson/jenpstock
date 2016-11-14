@@ -35,6 +35,11 @@ namespace jenpstock.Controllers
             JArray jsonObj = (JArray)JsonConvert.DeserializeObject(response);
             Debug.WriteLine("Key" + "\t\t" + "Value");
 
+            Model.Product dezerializedModel = (Model.Product)JsonConvert.DeserializeObject(reader.ReadToEnd(), typeof(Model.Product));
+            var products = JsonConvert.DeserializeObject(reader.ReadToEnd()) as JArray;
+
+
+
             foreach (var item in jsonObj)
             {
                 Debug.WriteLine(item["ProductID"].ToString());
