@@ -9,6 +9,13 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Serialization;
+using System.Runtime.Remoting;
 
 namespace jenpstock.Controllers
 {
@@ -30,10 +37,14 @@ namespace jenpstock.Controllers
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
 
-            Model.Product[] stockList= WeAreTesting(Url, StockId);
+
+            JToken oneProduct = HeyMan(Url, StockId);
+
+            //Call under construction method
+            //List<JToken> stockList= WeAreTesting(Url, StockId);
             
 
-            return View(stockList);
+            return View(oneProduct);
         }
 
         public void GetAnotherProduct(string url, string id)
@@ -85,12 +96,14 @@ namespace jenpstock.Controllers
 
 
         
-        public Model.Product[] WeAreTesting(string url, string stockId)
+        public List<JToken> WeAreTesting(string url, string stockId)
         {
             WebClient c = new WebClient();
             string downloadjson = url + stockId;
             var json = c.DownloadString(downloadjson);
             Rootobject shiet = Newtonsoft.Json.JsonConvert.DeserializeObject<Rootobject>(json);
+            
+            JArray jsonArray = JArray.Parse(downloadjson);
 
             //Model.Product shietSource = new Model.Product()
             //{
@@ -98,10 +111,47 @@ namespace jenpstock.Controllers
             //    Description = shiet.Description
             //};
 
-            return shiet.response;
+            return jsonArray.ToList();
         }
 
-        
+        public void WeAreTestingCoinflip()
+        {
+            string url = "http://winfastlosefaster.ecstudenter.se/Games/ListCoinflipGames";
+            WebClient c = new WebClient();
+            string downloadjson = url;
+            var json = c.DownloadString(downloadjson);
+            Rootobject shiet = Newtonsoft.Json.JsonConvert.DeserializeObject<Rootobject>(json);
+
+            JArray jsonArray = JArray.Parse(downloadjson);
+
+
+        }
+
+        public JToken HeyMan(string url, string stockId)
+        {
+            WebRequest request = WebRequest.Create(url + stockId);
+            Stream dataStream = request.GetResponse().GetResponseStream();
+            StreamReader reader = new StreamReader(dataStream);
+
+            string response = reader.ReadToEnd();
+            //dynamic jsonObj = JsonConvert.DeserializeObject(response);
+            //JObject jsonObj = (JObject)JsonConvert.DeserializeObject(response);
+            JArray jsonObj = (JArray)JsonConvert.DeserializeObject(response);
+
+            
+            Debug.WriteLine("Key" + "\t\t" + "Value");
+            foreach (var item in jsonObj)
+            {
+                Debug.WriteLine(item["ProductID"].ToString());
+                //Debug.WriteLine(item.ToString());
+            }
+
+
+            return jsonObj[0];
+
+        }
+
+
     }
 }
 

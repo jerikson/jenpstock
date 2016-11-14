@@ -1,4 +1,5 @@
-﻿@using ParttrapDev.Controllers
+﻿@using jenpstock.Controllers
+@model Newtonsoft.Json.Linq.JToken
 
 @{
     Layout = null;
@@ -8,9 +9,9 @@
 <html>
 <head></head>
 <body>
-    <h3>Stock: @ViewBag.Stockcode</h3>
+    @*<h3>Stock: @ViewBag.Stockcode</h3>
     <h3>Result: @ViewBag.Product</h3>
-    <h3>Result2: @ViewBag.ProductTest</h3>
+    <h3>Result2: @ViewBag.ProductTest</h3>*@
     
     @*<ul>
         @foreach (Stock.Product sp in Model)
@@ -19,7 +20,10 @@
         }
     </ul>*@
     
-    
+    @foreach (var item in Model)
+    {
+        <p>@item</p>
+    }
 
 </body>
 </html>
