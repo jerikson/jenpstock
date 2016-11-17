@@ -14,13 +14,13 @@ namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-        internal string Url = "";
+        internal string Url = "http://one.dev.parttrap.com/catalog/getrelatedchildproducts/?stockCode=";
         internal string StockId = "GOOGLE&relationId=4";
 
 
         public ActionResult Index()
         {
-            List<Model.Product> productList = GetProduct(Url, StockId);
+            List<Model.Product> productList = GetProducts(Url, StockId);
 
             ViewBag.Title = Url;
             ViewBag.Stockcode = StockId;
@@ -28,7 +28,7 @@ namespace jenpstock.Controllers
             return View(productList);
         }
 
-        public List<Model.Product> GetProduct(string url, string stockId)
+        public List<Model.Product> GetProducts(string url, string stockId)
         {
             List<JToken> productList = new List<JToken>();
             WebRequest request = WebRequest.Create(url + stockId);
@@ -50,6 +50,7 @@ namespace jenpstock.Controllers
 
             return listan;
         }
+
     }
 
 
