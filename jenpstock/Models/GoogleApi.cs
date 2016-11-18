@@ -17,11 +17,34 @@ namespace ParttrapDev.Models
     {
         private UserCredential _credential;
         private ShoppingContentService _service;
-        private string _clientId;
-        private string _clientSecret;
+        private string _clientId = "896777409399-ghva93bgs7qpv293tqj1vp4eefi7n82c.apps.googleusercontent.com";
+        private string _clientSecret = "Or7cg3mMtWmMsxIhBjecHcRq";
 
 
-        public ShoppingContentService CreateService(UserCredential credential)
+        public GoogleApi()
+        {
+            _credential = Authenticate();
+            _service = CreateService(_credential);
+        }
+
+        private UserCredential Authenticate()
+        {
+            string[] scopes = new string[] { ShoppingContentService.Scope.Content };
+
+            var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                          new ClientSecrets
+                          {
+                              ClientId = _clientId,
+                              ClientSecret = _clientSecret
+                          },
+                          scopes,
+                          "user",
+                          System.Threading.CancellationToken.None).Result;
+
+            return credential;
+        }
+
+        private ShoppingContentService CreateService(UserCredential credential)
         {
             var service = new ShoppingContentService(new BaseClientService.Initializer()
             {
@@ -55,9 +78,10 @@ namespace ParttrapDev.Models
 
 
 
-        public void ProductInsert()
+        public void ProductInsert(string productUrl)
         {
-
+            JArray productsToPush = ProductGet(productUrl);
+            //MORE CODE, OBV
         }
 
 
@@ -67,6 +91,16 @@ namespace ParttrapDev.Models
         }
 
         public void ProductDelete()
+        {
+
+        }
+
+        public void ProductReturn()
+        {
+
+        }
+
+        public void ProductStatusesReturn()
         {
 
         }
