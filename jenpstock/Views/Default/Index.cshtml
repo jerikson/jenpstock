@@ -1,6 +1,6 @@
 ﻿@using jenpstock.Controllers
 
-@model List<jenpstock.Model.Product>
+@model Newtonsoft.Json.Linq.JArray
 @{
     Layout = null;
 }
@@ -9,21 +9,15 @@
 <html>
 <head>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-
 </head>
 <body>
     <div class="container">
         <ul>
             @foreach (var item in Model)
             {
-                string img = "http://one.dev.parttrap.com";
 
                 <li class="list-group-item">
-                    <img src="@img@item.AdditionalValues.ImageUrl" />
-                    @item.Description
                 </li>
-
-
             }
         </ul>
     </div>
