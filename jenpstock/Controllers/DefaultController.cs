@@ -11,15 +11,15 @@ namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-        GoogleApi google = new GoogleApi();
         
         internal string Url = "";
-        internal string StockId = "";
        
         public ActionResult Index()
         {
-            JArray productList = google.ProductGet(Url);
-            return View(productList);
+            GoogleApi googleObject = new GoogleApi(113298073);
+            googleObject.ProductDelete(Url);
+
+            return View();
         }
 
 

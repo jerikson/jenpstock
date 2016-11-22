@@ -10,6 +10,7 @@ using System.Net;
 using System;
 using System.Linq;
 using jenpstock;
+using System.Diagnostics;
 
 namespace ParttrapDev.Models
 {
@@ -17,14 +18,16 @@ namespace ParttrapDev.Models
     {
         private UserCredential _credential;
         private ShoppingContentService _service;
+        private ulong _merchantID;
         private string _clientId = "896777409399-ghva93bgs7qpv293tqj1vp4eefi7n82c.apps.googleusercontent.com";
         private string _clientSecret = "Or7cg3mMtWmMsxIhBjecHcRq";
 
 
-        public GoogleApi()
+        public GoogleApi(ulong merchantID)
         {
             _credential = Authenticate();
             _service = CreateService(_credential);
+            _merchantID = merchantID;
         }
 
         private UserCredential Authenticate()
@@ -54,14 +57,14 @@ namespace ParttrapDev.Models
             return service;
         }
 
-        public JArray ProductGet(string url)
+        private JArray ProductGet(string url)
         {
             WebClient client = new WebClient();
             JArray jsonObj = new JArray();
             try
             {
                 string json = client.DownloadString(url);
-                jsonObj = (JArray)JsonConvert.DeserializeObject(json);
+                jsonObj = JArray.Parse(json);
             }
             catch (Exception e)
             {
@@ -76,12 +79,108 @@ namespace ParttrapDev.Models
         }
 
 
-
-
+        ///<summary>
+        ///Inserts products to a Google Shopping account using custombatch method to send multiple requests as one.
+        ///<para>productUrl is a URI to something that returns a JSON object.</para>
+        /// </summary>
         public void ProductInsert(string productUrl)
         {
             JArray productsToPush = ProductGet(productUrl);
-            //MORE CODE, OBV
+            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
+
+            //foreach (var product in productsToPush)
+            //{
+
+            //    Google.Apis.ShoppingContent.v2.Data.Product newProduct = new Google.Apis.ShoppingContent.v2.Data.Product()
+            //    {
+            //        OfferId = product["ProductID"].ToString(),
+            //        Title = "My Test Product: " + i,
+            //        Description = "This is a test product that I made. It is number " + i + " in a series of " + productsToMake + " that I will create.",
+            //        Link = "https://www.example.com/products/Product?productId=" + i,
+            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=" + i + "&imageIndex=0",
+            //        ContentLanguage = "sv",
+            //        TargetCountry = "SE",
+            //        Channel = "online",
+            //        Availability = "out of stock",
+            //        Condition = "new",
+            //        GoogleProductCategory = "3219",
+            //        IdentifierExists = false,
+            //        Price = new Google.Apis.ShoppingContent.v2.Data.Price()
+            //        {
+            //            Currency = "SEK",
+            //            Value = i + "00"
+            //        }
+            //    };
+
+            //    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+            //    {
+            //        Method = "insert",
+            //        BatchId = long.Parse(newProduct.OfferId),
+            //        MerchantId = _merchantID,
+            //        Product = newProduct
+            //    };
+
+            //    batchRequest.Entries.Add(newEntry);
+
+            //}
+
+
+
+
+
+            //        OfferId = product["ProductID"].ToString(),
+            //        Title = "My Test Product: " + i,
+            //        Description = "This is a test product that I made. It is number " + i + " in a series of " + productsToMake + " that I will create.",
+            //        Link = "https://www.example.com/products/Product?productId=" + i,
+            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=" + i + "&imageIndex=0",
+            //        ContentLanguage = "sv",
+            //        TargetCountry = "SE",
+            //        Channel = "online",
+            //        Availability = "out of stock",
+            //        Condition = "new",
+            //        GoogleProductCategory = "3219",
+            //        IdentifierExists = false,
+            //        Currency = "SEK",
+            //        Price = i + "00"
+
+            // Saknade Google Attributer: 
+            // Title, ContentLanguage, TargetCountry,
+            // Availability, Condition, GoogleProductCategory, 
+            //--------------------------------------------------------------------------
+            //GÖRA EFTER LUNCH:
+            //Mappa och skriva ut dem attributer jag kan här.
+            //Sen implementera dem i riktiga insert ovanför.
+            foreach (var product in productsToPush)
+            {
+                Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
+                Debug.WriteLine("Description: " + product["Description"].ToString());
+                Debug.WriteLine("Price, incl VAT: " + product["NetPriceInclVAT"]["Amount"].ToString());
+                Debug.WriteLine("Currency: " + product["NetPriceInclVAT"]["Currency"]["Code"].ToString());
+                Debug.WriteLine("Product Page Link: " + product["AdditionalValues"]["DetailLink"].ToString());
+                Debug.WriteLine("Image Link: " + product["AdditionalValues"]["ImageUrl"].ToString());
+                //Debug.WriteLine(product[].ToString());
+                //Debug.WriteLine(product[].ToString());
+                //Debug.WriteLine(product[].ToString());
+                //Debug.WriteLine(product[].ToString());
+                break;
+            }
+
+
+            try
+            {
+                ProductsResource.CustombatchRequest reeeq = _service.Products.Custombatch(batchRequest);
+                reeeq.Execute();
+            }
+            catch (Exception e)
+            {
+               System.Diagnostics.Debug.WriteLine("EXCEPTION THROWN @ProductInsert()");
+               System.Diagnostics.Debug.WriteLine("Message: " + e.Message);
+               System.Diagnostics.Debug.WriteLine("Stack Trace: " + e.StackTrace);
+               System.Diagnostics.Debug.WriteLine("Target Site: " + e.TargetSite);
+            }
+
+            return;
         }
 
 
@@ -90,9 +189,50 @@ namespace ParttrapDev.Models
 
         }
 
-        public void ProductDelete()
+        ///<summary>
+        ///Deletes products from a Google Shopping account using custombatch method to send multiple requests as one.
+        ///<para>productUrl is a URI to something that returns a JSON object.</para>
+        /// </summary>
+        public void ProductDelete(string productUrl)
         {
+            JArray productsToDelete = ProductGet(productUrl);
 
+            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
+            int batchId = 1;
+
+            string idConstruct = "";
+
+            foreach (var product in productsToDelete)
+            {
+                // No static later, when we have more data.
+                idConstruct = "online:sv:SE:" + product["ProductID"].ToString();
+                ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+                {
+                    BatchId = batchId,
+                    MerchantId = _merchantID,
+                    Method = "delete",
+                    ProductId = idConstruct
+                };
+                batchRequest.Entries.Add(newEntry);
+                batchId++;
+            }
+
+
+            try
+            {
+                ProductsResource.CustombatchRequest reeeq = _service.Products.Custombatch(batchRequest);
+                reeeq.Execute();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("EXCEPTION THROWN @ProductDelete()");
+                Debug.WriteLine("Message: " + e.Message);
+                Debug.WriteLine("Stack Trace: " + e.StackTrace);
+                Debug.WriteLine("Target Site: " + e.TargetSite);
+            }
+
+            return;
         }
 
         public void ProductReturn()
@@ -104,6 +244,7 @@ namespace ParttrapDev.Models
         {
 
         }
+
 
     }
 }
