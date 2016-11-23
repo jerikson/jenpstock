@@ -59,21 +59,32 @@ namespace ParttrapDev.Models
 
         private JArray ProductGet(string url)
         {
+            //WebClient version
             WebClient client = new WebClient();
             JArray jsonObj = new JArray();
-            try
+            using (WebClient client2 = new WebClient())
             {
-                string json = client.DownloadString(url);
-                jsonObj = JArray.Parse(json);
+                try
+                {
+                    string json = client.DownloadString(url);
+                    jsonObj = JArray.Parse(json);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Message: " + e.Message + "\nStacktrace" + e.StackTrace + "\nTarget: " + e.TargetSite);
+                }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Message: " + e.Message + "\nStacktrace" + e.StackTrace + "\nTarget: " + e.TargetSite);
-            }
-            finally
-            {
-                client.Dispose();
-            }
+
+
+            // WebRequest ska tydligen vara bättre för stora överföringar? Ska tydligen inte blocka interface 
+            // thread, men MVC har inte interface thread? Det har väl bara WPF o sånt?
+            //WebRequest version
+            //WebRequest request = WebRequest.Create(url);
+            //Stream dataStream = request.GetResponse().GetResponseStream();
+            //StreamReader reader = new StreamReader(dataStream);
+            //string response = reader.ReadToEnd();
+            //JArray jsonObj = JArray.Parse(response);
+
 
             return jsonObj;
         }
@@ -129,11 +140,11 @@ namespace ParttrapDev.Models
 
 
 
-            //        OfferId = product["ProductID"].ToString(),
-            //        Title = "My Test Product: " + i,
-            //        Description = "This is a test product that I made. It is number " + i + " in a series of " + productsToMake + " that I will create.",
-            //        Link = "https://www.example.com/products/Product?productId=" + i,
-            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=" + i + "&imageIndex=0",
+            //        OfferId = "Unique Id",
+            //        Title = "I am a title to a product",
+            //        Description = "I am a product description.",
+            //        Link = "https://www.example.com/products/Product?productId=1",
+            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
             //        ContentLanguage = "sv",
             //        TargetCountry = "SE",
             //        Channel = "online",
@@ -142,7 +153,7 @@ namespace ParttrapDev.Models
             //        GoogleProductCategory = "3219",
             //        IdentifierExists = false,
             //        Currency = "SEK",
-            //        Price = i + "00"
+            //        Price = "100"
 
             // Saknade Google Attributer: 
             // Title, ContentLanguage, TargetCountry,
@@ -201,6 +212,7 @@ namespace ParttrapDev.Models
             batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
             int batchId = 1;
 
+            //channel:language:TARGET_COUNTRY:OfferId
             string idConstruct = "";
 
             foreach (var product in productsToDelete)
