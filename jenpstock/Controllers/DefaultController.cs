@@ -11,22 +11,24 @@ namespace jenpstock.Controllers
 {
     public class DefaultController : Controller
     {
-        
+
         internal string Url = "";
-       
+
         public ActionResult Index()
         {
             GoogleApi googleObject = new GoogleApi(113298073);
             googleObject.ProductDelete(Url);
+            //googleObject.ProductInsert(Url, false);
+            //googleObject.ProductUpdate(Url);
 
             return View();
         }
 
 
-        public List<Model.Product> GetProducts(string url, string stockId)
+        public List<Model.Product> GetProducts(string url)
         {
             List<JToken> productList = new List<JToken>();
-            WebRequest request = WebRequest.Create(url + stockId);
+            WebRequest request = WebRequest.Create(url);
             Stream dataStream = request.GetResponse().GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
 
