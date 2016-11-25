@@ -66,7 +66,9 @@ namespace ParttrapDev.Models
             {
                 try
                 {
+                    //Kolla ifall ProductTextField2 finns om man använder JsonConvert.DeserializeObject.
                     string json = client.DownloadString(url);
+                    //jsonObj = (JArray)JsonConvert.DeserializeObject(json);
                     jsonObj = JArray.Parse(json);
                 }
                 catch (Exception e)
@@ -85,13 +87,12 @@ namespace ParttrapDev.Models
             //string response = reader.ReadToEnd();
             //JArray jsonObj = JArray.Parse(response);
 
-
             return jsonObj;
         }
 
 
         ///<summary>
-        ///Inserts products to a Google Shopping account using custombatch method to send multiple requests as one.
+        ///Inserts and/or updates products to a Google Shopping account using custombatch method to send multiple requests as one.
         ///<para>productUrl is a URI to something that returns a JSON object.</para>
         /// </summary>
         public void ProductInsert(string productUrl, bool update)
@@ -101,83 +102,83 @@ namespace ParttrapDev.Models
             batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
 
             //Update boolean kommer bara existera i testing, inte i slutgiltliga version.
-            if (update == false)
-            {
-                //Insert product
-                foreach (var product in productsToPush)
-                {
-                    Product newProduct = new Product()
-                    {
-                        OfferId = product["ProductID"].ToString(),
-                        Title = "Product Title",
-                        Description = "Product description",
-                        Link = "https://www.example.com/products/Product?productId=1",
-                        ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-                        ContentLanguage = "sv",
-                        TargetCountry = "SE",
-                        Channel = "online",
-                        Availability = "out of stock",
-                        Condition = "new",
-                        GoogleProductCategory = "3219",
-                        IdentifierExists = false,
-                        Price = new Price()
-                        {
-                            Currency = "SEK",
-                            Value = "100"
-                        }
-                    };
+            //if (update == false)
+            //{
+            //Insert product
+            //    foreach (var product in productsToPush)
+            //    {
+            //        Product newProduct = new Product()
+            //        {
+            //            OfferId = product["ProductID"].ToString(),
+            //            Title = "Product Title",
+            //            Description = "Product description",
+            //            Link = "https://www.example.com/products/Product?productId=1",
+            //            ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
+            //            ContentLanguage = "sv",
+            //            TargetCountry = "SE",
+            //            Channel = "online",
+            //            Availability = "out of stock",
+            //            Condition = "new",
+            //            GoogleProductCategory = "3219",
+            //            IdentifierExists = false,
+            //            Price = new Price()
+            //            {
+            //                Currency = "SEK",
+            //                Value = "100"
+            //            }
+            //        };
 
-                    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-                    {
-                        Method = "insert",
-                        BatchId = long.Parse(newProduct.OfferId),
-                        MerchantId = _merchantID,
-                        Product = newProduct
-                    };
+            //        ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+            //        {
+            //            Method = "insert",
+            //            BatchId = long.Parse(newProduct.OfferId),
+            //            MerchantId = _merchantID,
+            //            Product = newProduct
+            //        };
 
-                    batchRequest.Entries.Add(newEntry);
+            //        batchRequest.Entries.Add(newEntry);
 
-                }
-            }
-            else
-            {
-                //Update product
-                foreach (var product in productsToPush)
-                {
-                    Product newProduct = new Product()
-                    {
-                        OfferId = product["ProductID"].ToString(),
-                        Title = "Updated product title!",
-                        Description = "Updated description!",
-                        Link = "https://www.example.com/products/Product?productId=1",
-                        ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-                        ContentLanguage = "sv",
-                        TargetCountry = "SE",
-                        Channel = "online",
-                        Availability = "out of stock",
-                        Condition = "new",
-                        GoogleProductCategory = "3219",
-                        IdentifierExists = false,
-                        Price = new Price()
-                        {
-                            Currency = "SEK",
-                            Value = "200"
-                        }
-                    };
+            //    }
+            //}
+            //else
+            //{
+            //    //Update product
+            //    foreach (var product in productsToPush)
+            //    {
+            //        Product newProduct = new Product()
+            //        {
+            //            OfferId = product["ProductID"].ToString(),
+            //            Title = "Updated product title!",
+            //            Description = "Updated description!",
+            //            Link = "https://www.example.com/products/Product?productId=1",
+            //            ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
+            //            ContentLanguage = "sv",
+            //            TargetCountry = "SE",
+            //            Channel = "online",
+            //            Availability = "out of stock",
+            //            Condition = "new",
+            //            GoogleProductCategory = "3219",
+            //            IdentifierExists = false,
+            //            Price = new Price()
+            //            {
+            //                Currency = "SEK",
+            //                Value = "200"
+            //            }
+            //        };
 
-                    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-                    {
-                        Method = "insert",
-                        BatchId = long.Parse(newProduct.OfferId),
-                        MerchantId = _merchantID,
-                        Product = newProduct,
-                    };
+            //        ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+            //        {
+            //            Method = "insert",
+            //            BatchId = long.Parse(newProduct.OfferId),
+            //            MerchantId = _merchantID,
+            //            Product = newProduct,
+            //        };
 
-                    batchRequest.Entries.Add(newEntry);
+            //        batchRequest.Entries.Add(newEntry);
 
-                }
-            }
-            
+            //    }
+            //}
+
 
 
 
@@ -205,19 +206,35 @@ namespace ParttrapDev.Models
             //GÖRA EFTER LUNCH:
             //Mappa och skriva ut dem attributer jag kan här.
             //Sen implementera dem i riktiga insert ovanför.
+
+
+            Debug.WriteLine("MAI NIGGA: " + productsToPush.Children());
+
+
             foreach (var product in productsToPush)
             {
+                Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
+                Debug.WriteLine("Type: " + product.Type);
+
+
+
                 Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
                 Debug.WriteLine("Description: " + product["Description"].ToString());
                 Debug.WriteLine("Price, incl VAT: " + product["NetPriceInclVAT"]["Amount"].ToString());
                 Debug.WriteLine("Currency: " + product["NetPriceInclVAT"]["Currency"]["Code"].ToString());
                 Debug.WriteLine("Product Page Link: " + product["AdditionalValues"]["DetailLink"].ToString());
                 Debug.WriteLine("Image Link: " + product["AdditionalValues"]["ImageUrl"].ToString());
+                //Crashar på dessa jag har lagt in:
+                if (product["AdditionalValues"]["ProductTextField1"] != null)
+                Debug.WriteLine("CHECK DIS 1: " + product["AdditionalValues"]["ProductTextField1"].ToString());
+                if (product["AdditionalValues"]["ProductTextField2"] != null)
+                Debug.WriteLine("CHECK DIS 2: " + product["AdditionalValues"]["ProductTextField2"].ToString());
+                
                 //Debug.WriteLine(product[].ToString());
                 //Debug.WriteLine(product[].ToString());
                 //Debug.WriteLine(product[].ToString());
                 //Debug.WriteLine(product[].ToString());
-                break;
+                //break;
             }
 
 
@@ -346,7 +363,7 @@ namespace ParttrapDev.Models
         }
 
         /// <summary>
-        /// Returns a page of the merchan's Google Shopping products
+        /// Returns a page of the merchant's Google Shopping products
         /// <para>Max 250 per page</para>
         /// </summary>
         /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.Product ></returns>
@@ -375,14 +392,13 @@ namespace ParttrapDev.Models
         }
 
         /// <summary>
-        /// Returns a page of the merchan's Google Shopping productstatuses
+        /// Returns a page of the merchant's Google Shopping productstatuses
         /// <para>A productstatus can includ errors and such</para>
         /// <para>Max 250 per page</para>
         /// </summary>
         /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.ProductStatus ></returns>
         public List<ProductStatus> ProductStatusesReturn()
         {
-            
             string pageToken = null;
             const long maxResults = 250;
 

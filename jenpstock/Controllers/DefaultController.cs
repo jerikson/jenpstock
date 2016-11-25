@@ -17,8 +17,8 @@ namespace jenpstock.Controllers
         public ActionResult Index()
         {
             GoogleApi googleObject = new GoogleApi(113298073);
-            googleObject.ProductDelete(Url);
-            //googleObject.ProductInsert(Url, false);
+            //googleObject.ProductDelete(Url);
+            googleObject.ProductInsert(Url, false);
             //googleObject.ProductUpdate(Url);
 
             return View();
