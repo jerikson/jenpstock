@@ -60,9 +60,9 @@ namespace ParttrapDev.Models
         private JArray ProductGet(string url)
         {
             //WebClient version
-            WebClient client = new WebClient();
+            //WebClient client = new WebClient();
             JArray jsonObj = new JArray();
-            using (WebClient client2 = new WebClient())
+            using (WebClient client = new WebClient())
             {
                 try
                 {
@@ -73,19 +73,18 @@ namespace ParttrapDev.Models
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Message: " + e.Message + "\nStacktrace" + e.StackTrace + "\nTarget: " + e.TargetSite);
+                    Debug.WriteLine("Message: " + e.Message + "\nStacktrace: " + e.StackTrace + "\nTarget: " + e.TargetSite);
                 }
             }
-
 
             // WebRequest ska tydligen vara bättre för stora överföringar? Ska tydligen inte blocka interface 
             // thread, men MVC har inte interface thread? Det har väl bara WPF o sånt?
             //WebRequest version
-            //WebRequest request = WebRequest.Create(url);
-            //Stream dataStream = request.GetResponse().GetResponseStream();
-            //StreamReader reader = new StreamReader(dataStream);
-            //string response = reader.ReadToEnd();
-            //JArray jsonObj = JArray.Parse(response);
+            //////WebRequest request = WebRequest.Create(url);
+            //////Stream dataStream = request.GetResponse().GetResponseStream();
+            //////StreamReader reader = new StreamReader(dataStream);
+            //////string response = reader.ReadToEnd();
+            //////JArray jsonObj = JArray.Parse(response);
 
             return jsonObj;
         }
@@ -207,16 +206,15 @@ namespace ParttrapDev.Models
             //Mappa och skriva ut dem attributer jag kan här.
             //Sen implementera dem i riktiga insert ovanför.
 
-
-            Debug.WriteLine("MAI NIGGA: " + productsToPush.Children());
-
-
-            foreach (var product in productsToPush)
+      
+            foreach (JObject product in productsToPush.Children())
             {
-                Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
+                //Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
                 Debug.WriteLine("Type: " + product.Type);
+                Debug.WriteLine("Product Values: " + product.Values());
 
-
+                //GÖRA EFTER LUNCH:
+                //Greja mer med denna fakking JSON skiten...
 
                 Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
                 Debug.WriteLine("Description: " + product["Description"].ToString());
@@ -226,10 +224,14 @@ namespace ParttrapDev.Models
                 Debug.WriteLine("Image Link: " + product["AdditionalValues"]["ImageUrl"].ToString());
                 //Crashar på dessa jag har lagt in:
                 if (product["AdditionalValues"]["ProductTextField1"] != null)
-                Debug.WriteLine("CHECK DIS 1: " + product["AdditionalValues"]["ProductTextField1"].ToString());
+                    Debug.WriteLine("CHECK DIS 1: " + product["AdditionalValues"]["ProductTextField1"].ToString());
                 if (product["AdditionalValues"]["ProductTextField2"] != null)
-                Debug.WriteLine("CHECK DIS 2: " + product["AdditionalValues"]["ProductTextField2"].ToString());
-                
+                    Debug.WriteLine("CHECK DIS 2: " + product["AdditionalValues"]["ProductTextField2"].ToString());
+                if (product["AdditionalValues"]["Status"] != null)
+                    Debug.WriteLine("IS DIS WORK?: " + product["AdditionalValues"]["Status"].ToString());
+                if (product["ProductFieldsTexts"] != null)
+                    Debug.WriteLine("PLEASE WORK: " + product["ProductFieldsTexts"].ToString());
+
                 //Debug.WriteLine(product[].ToString());
                 //Debug.WriteLine(product[].ToString());
                 //Debug.WriteLine(product[].ToString());
