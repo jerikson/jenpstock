@@ -57,17 +57,16 @@ namespace ParttrapDev.Models
             return service;
         }
 
-        private JArray ProductGet(string url)
+        private JArray ProductGet(string productUrl)
         {
             //WebClient version
-            //WebClient client = new WebClient();
             JArray jsonObj = new JArray();
             using (WebClient client = new WebClient())
             {
                 try
                 {
                     //Kolla ifall ProductTextField2 finns om man använder JsonConvert.DeserializeObject.
-                    string json = client.DownloadString(url);
+                    string json = client.DownloadString(productUrl);
                     //jsonObj = (JArray)JsonConvert.DeserializeObject(json);
                     jsonObj = JArray.Parse(json);
                 }
@@ -77,14 +76,32 @@ namespace ParttrapDev.Models
                 }
             }
 
+
             // WebRequest ska tydligen vara bättre för stora överföringar? Ska tydligen inte blocka interface 
             // thread, men MVC har inte interface thread? Det har väl bara WPF o sånt?
             //WebRequest version
-            //////WebRequest request = WebRequest.Create(url);
+            //////WebRequest request = WebRequest.Create(productUrl);
             //////Stream dataStream = request.GetResponse().GetResponseStream();
             //////StreamReader reader = new StreamReader(dataStream);
             //////string response = reader.ReadToEnd();
             //////JArray jsonObj = JArray.Parse(response);
+
+
+            //HttpWebRequest version
+            //////HttpWebRequest request = (HttpWebRequest)WebRequest.Create(productUrl);
+            //////request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            //////request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            //////request.ContentType = "application/json; charset=utf-8";
+            //////request.Method = WebRequestMethods.Http.Get;
+            //////request.Accept = "application/json";
+
+            //////HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            //////Stream dataStream = response.GetResponseStream();
+            //////StreamReader reader = new StreamReader(dataStream);
+            //////string json = reader.ReadToEnd();
+            //////JArray jsonObj = JArray.Parse(json);
+
 
             return jsonObj;
         }
@@ -206,13 +223,13 @@ namespace ParttrapDev.Models
             //Mappa och skriva ut dem attributer jag kan här.
             //Sen implementera dem i riktiga insert ovanför.
 
-      
-            foreach (JObject product in productsToPush.Children())
+
+            foreach (var product in productsToPush)
             {
                 //Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
                 Debug.WriteLine("Type: " + product.Type);
                 Debug.WriteLine("Product Values: " + product.Values());
-
+                
                 //GÖRA EFTER LUNCH:
                 //Greja mer med denna fakking JSON skiten...
 
