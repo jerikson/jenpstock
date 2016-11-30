@@ -382,14 +382,19 @@ namespace ParttrapDev.Models
         }
 
         /// <summary>
-        /// Returns a page of the merchant's Google Shopping products
-        /// <para>Max 250 per page</para>
+        /// Returns a list of Google Product Lists List<List<Product>>
+        /// <para>Min 1 per list, Max 250 per list</para>
         /// </summary>
-        /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.Product ></returns>
-        public List<Product> ProductReturn()
+        /// <returns>Returns a List< List< Google.Apis.ShoppingContent.v2.Data.Product > ></returns>
+        public List<List<Product>> ProductReturn(int maxResults, int page = 1)
         {
+            if (maxResults < 1 || maxResults > 250)
+            {
+                maxResults = 20;
+            }
             string pageToken = null;
-            const long maxResults = 250;
+
+            List<List<Product>> allProducts = new List<List<Product>>();
 
             ProductsListResponse productsResponse = null;
             do
@@ -400,14 +405,25 @@ namespace ParttrapDev.Models
                 productsRequest.IncludeInvalidInsertedItems = true;
                 productsResponse = productsRequest.Execute();
 
-                if (productsResponse.NextPageToken != null)
+
+                pageToken = productsResponse.NextPageToken;
+                if (productsResponse.Resources != null)
                 {
-                    pageToken = productsResponse.NextPageToken;
+                    allProducts.Add(productsResponse.Resources.ToList());
                 }
             }
-            while (productsResponse.NextPageToken != null);
+            while (pageToken != null);
 
-            return productsResponse.Resources.ToList();
+
+            //Gives page the index value, aka. If you want index 0 "page 1", you input 1 as page
+            //And it gives you the element at index 0.
+            if (page > 0)
+                page--;
+            else
+                page = 0;
+                 
+
+            return allProducts;
         }
 
         /// <summary>
