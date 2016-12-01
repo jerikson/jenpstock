@@ -18,9 +18,11 @@ namespace jenpstock.Controllers
         {
             GoogleApi googleObject = new GoogleApi(113298073);
             //googleObject.ProductDelete(Url);
-            //googleObject.ProductInsert(Url, false);
+            googleObject.ProductInsert(Url, false);
             //googleObject.ProductUpdate(Url);
-            List<List<Google.Apis.ShoppingContent.v2.Data.Product>> myProducts = googleObject.ProductReturn(maxResults : 0, page : 5);
+            //////List<List<Google.Apis.ShoppingContent.v2.Data.Product>> allProducts = googleObject.ProductReturn(maxResults : 1, page : 1);
+            //////googleObject.ProductStatusesReturn(maxResults : 1, page : 1);
+            //Google.Apis.ShoppingContent.v2.Data.Product myProduct = googleObject.ProductGetSpecificProduct(productUrl : Url);
 
             return View();
         }

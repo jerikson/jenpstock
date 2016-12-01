@@ -120,7 +120,7 @@ namespace ParttrapDev.Models
             //Update boolean kommer bara existera i testing, inte i slutgiltliga version.
             //if (update == false)
             //{
-            //Insert product
+            //    //Insert product
             //    foreach (var product in productsToPush)
             //    {
             //        Product newProduct = new Product()
@@ -432,10 +432,9 @@ namespace ParttrapDev.Models
         /// <para>Max 250 per page</para>
         /// </summary>
         /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.ProductStatus ></returns>
-        public List<ProductStatus> ProductStatusesReturn()
+        public List<ProductStatus> ProductStatusesReturn(int maxResults, int page = 1)
         {
             string pageToken = null;
-            const long maxResults = 250;
 
             ProductstatusesListResponse productStatusesResponse = null;
             do
@@ -454,6 +453,44 @@ namespace ParttrapDev.Models
             while (productStatusesResponse.NextPageToken != null);
 
             return productStatusesResponse.Resources.ToList();
+        }
+
+        public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetSpecificProducts(string productUrl = "")
+        {
+            JArray selectedProducts = ProductGet(productUrl);
+
+
+            ProductsCustomBatchResponse batchResponse;
+            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
+
+            foreach (var product in selectedProducts)
+            {
+                ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+                {
+                    BatchId = (long)product["ProductID"],
+                    MerchantId = _merchantID,
+                    Method = "get",
+                    //Bygg upp riktig- channel:language:TARGET_COUNTRY:OfferId
+                    ProductId = product["ProductID"].ToString()
+                };
+                batchRequest.Entries.Add(newEntry);
+            }
+
+            try
+            {
+                ProductsResource.CustombatchRequest reeeq = _service.Products.Custombatch(batchRequest);
+                batchResponse = reeeq.Execute();
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("EXCEPTION THROWN @ProductGetSpecificProducts()");
+                System.Diagnostics.Debug.WriteLine("Message: " + e.Message);
+                System.Diagnostics.Debug.WriteLine("Stack Trace: " + e.StackTrace);
+                System.Diagnostics.Debug.WriteLine("Target Site: " + e.TargetSite);
+            }
+
+            return new List<Product>();
         }
 
 
