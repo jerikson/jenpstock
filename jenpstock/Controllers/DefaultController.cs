@@ -12,7 +12,7 @@ namespace jenpstock.Controllers
     public class DefaultController : Controller
     {
 
-        internal string Url = "http://one.dev.parttrap.com/catalog/getrelatedchildproducts/?stockCode=GOOGLE&relationId=4";
+        internal string Url = "";
 
         public ActionResult Index()
         {
@@ -22,7 +22,7 @@ namespace jenpstock.Controllers
             //googleObject.ProductUpdate(Url);
             //////List<List<Google.Apis.ShoppingContent.v2.Data.Product>> allProducts = googleObject.ProductReturn(maxResults : 1, page : 1);
             //////googleObject.ProductStatusesReturn(maxResults : 1, page : 1);
-            //Google.Apis.ShoppingContent.v2.Data.Product myProduct = googleObject.ProductGetSpecificProduct(productUrl : Url);
+            //////List<Google.Apis.ShoppingContent.v2.Data.Product> myProduct = googleObject.ProductGetSpecificProducts(Url);
 
             return View();
         }

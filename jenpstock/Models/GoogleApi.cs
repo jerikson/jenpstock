@@ -73,6 +73,7 @@ namespace ParttrapDev.Models
                 catch (Exception e)
                 {
                     Debug.WriteLine("Message: " + e.Message + "\nStacktrace: " + e.StackTrace + "\nTarget: " + e.TargetSite);
+                    return null;
                 }
             }
 
@@ -455,15 +456,22 @@ namespace ParttrapDev.Models
             return productStatusesResponse.Resources.ToList();
         }
 
-        public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetSpecificProducts(string productUrl = "")
+        /// <summary>
+        /// Returns Google Shopping Product versions of the products in the url.
+        /// <para>Takes a product url as parameter.</para>
+        /// </summary>
+        /// <param name="productUrl">Parameter</param>
+        /// <returns>A list of google products</returns>
+        public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetSpecificProducts(string productUrl)
         {
             JArray selectedProducts = ProductGet(productUrl);
 
 
-            ProductsCustomBatchResponse batchResponse;
+            ProductsCustomBatchResponse batchResponse = null;
             ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
             batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
-
+            List<Google.Apis.ShoppingContent.v2.Data.Product> productsToReturn = new List<Product>();
+            
             foreach (var product in selectedProducts)
             {
                 ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
@@ -471,8 +479,8 @@ namespace ParttrapDev.Models
                     BatchId = (long)product["ProductID"],
                     MerchantId = _merchantID,
                     Method = "get",
-                    //Bygg upp riktig- channel:language:TARGET_COUNTRY:OfferId
-                    ProductId = product["ProductID"].ToString()
+                    //Bygg upp riktig- channel:content_language:TARGET_COUNTRY:OfferId
+                    ProductId = "online:sv:SE:" + product["ProductID"].ToString()
                 };
                 batchRequest.Entries.Add(newEntry);
             }
@@ -488,9 +496,15 @@ namespace ParttrapDev.Models
                 System.Diagnostics.Debug.WriteLine("Message: " + e.Message);
                 System.Diagnostics.Debug.WriteLine("Stack Trace: " + e.StackTrace);
                 System.Diagnostics.Debug.WriteLine("Target Site: " + e.TargetSite);
+                return null;
             }
 
-            return new List<Product>();
+            foreach (var entry in batchResponse.Entries)
+            {
+                productsToReturn.Add(entry.Product);
+            }
+
+            return productsToReturn;
         }
 
 
