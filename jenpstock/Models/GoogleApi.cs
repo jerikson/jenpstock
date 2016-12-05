@@ -72,7 +72,7 @@ namespace ParttrapDev.Models
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Message: " + e.Message + "\nStacktrace: " + e.StackTrace + "\nTarget: " + e.TargetSite);
+                    System.Diagnostics.Debug.WriteLine("Message: " + e.Message + "\nStacktrace: " + e.StackTrace + "\nTarget: " + e.TargetSite);
                     return null;
                 }
             }
@@ -231,8 +231,6 @@ namespace ParttrapDev.Models
                 Debug.WriteLine("Type: " + product.Type);
                 Debug.WriteLine("Product Values: " + product.Values());
                 
-                //GÖRA EFTER LUNCH:
-                //Greja mer med denna fakking JSON skiten...
 
                 Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
                 Debug.WriteLine("Description: " + product["Description"].ToString());
@@ -337,7 +335,7 @@ namespace ParttrapDev.Models
         ///<summary>
         ///Deletes products from a Google Shopping account using custombatch method to send multiple requests as one.
         ///<para>productUrl is a URI to something that returns a JSON object.</para>
-        /// </summary>
+        ///</summary>
         public void ProductDelete(string productUrl)
         {
             JArray productsToDelete = ProductGet(productUrl);
@@ -373,29 +371,37 @@ namespace ParttrapDev.Models
             }
             catch (Exception e)
             {
-                Debug.WriteLine("EXCEPTION THROWN @ProductDelete()");
-                Debug.WriteLine("Message: " + e.Message);
-                Debug.WriteLine("Stack Trace: " + e.StackTrace);
-                Debug.WriteLine("Target Site: " + e.TargetSite);
+                System.Diagnostics.Debug.WriteLine("EXCEPTION THROWN @ProductDelete()");
+                System.Diagnostics.Debug.WriteLine("Message: " + e.Message);
+                System.Diagnostics.Debug.WriteLine("Stack Trace: " + e.StackTrace);
+                System.Diagnostics.Debug.WriteLine("Target Site: " + e.TargetSite);
             }
 
             return;
         }
 
         /// <summary>
-        /// Returns a list of Google Product Lists List<List<Product>>
+        /// Returns a list of Google Products List"<Product>"
         /// <para>Min 1 per list, Max 250 per list</para>
         /// </summary>
-        /// <returns>Returns a List< List< Google.Apis.ShoppingContent.v2.Data.Product > ></returns>
-        public List<List<Product>> ProductReturn(int maxResults, int page = 1)
+        /// <param name="maxResults">Param</param>
+        /// <param name="page"></param>
+        /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.Product ></returns>
+        public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductsReturn(int? maxResults, int? page)
         {
+            
+            if (maxResults == null)
+            {
+                maxResults = 20;
+            }
+                
             if (maxResults < 1 || maxResults > 250)
             {
                 maxResults = 20;
             }
             string pageToken = null;
 
-            List<List<Product>> allProducts = new List<List<Product>>();
+            List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = new List<Google.Apis.ShoppingContent.v2.Data.Product>();
 
             ProductsListResponse productsResponse = null;
             do
@@ -406,11 +412,10 @@ namespace ParttrapDev.Models
                 productsRequest.IncludeInvalidInsertedItems = true;
                 productsResponse = productsRequest.Execute();
 
-
                 pageToken = productsResponse.NextPageToken;
                 if (productsResponse.Resources != null)
                 {
-                    allProducts.Add(productsResponse.Resources.ToList());
+                    allProducts.AddRange(productsResponse.Resources);
                 }
             }
             while (pageToken != null);
@@ -419,23 +424,49 @@ namespace ParttrapDev.Models
             //Gives page the index value, aka. If you want index 0 "page 1", you input 1 as page
             //And it gives you the element at index 0.
             if (page > 0)
+            {
                 page--;
+            }
             else
+            {
                 page = 0;
-                 
+            }
 
-            return allProducts;
+            if ((int)(maxResults * page) < allProducts.Count)
+            {
+                allProducts.RemoveRange(0, (int)(maxResults * page));
+            }
+            else
+            {
+                return null;
+                //return new List<Product>();
+            }
+
+
+            return allProducts.Take((int)maxResults).ToList();
         }
 
         /// <summary>
         /// Returns a page of the merchant's Google Shopping productstatuses
-        /// <para>A productstatus can includ errors and such</para>
+        /// <para>A productstatus can include errors and such of a product</para>
         /// <para>Max 250 per page</para>
         /// </summary>
         /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.ProductStatus ></returns>
-        public List<ProductStatus> ProductStatusesReturn(int maxResults, int page = 1)
+        public List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> ProductStatusesReturn(int? maxResults, int? page = 1)
         {
+
+            if (maxResults == null)
+            {
+                maxResults = 20;
+            }
+
+            if (maxResults < 1 || maxResults > 250)
+            {
+                maxResults = 20;
+            }
             string pageToken = null;
+
+            List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> allProductStatuses = new List<Google.Apis.ShoppingContent.v2.Data.ProductStatus>();
 
             ProductstatusesListResponse productStatusesResponse = null;
             do
@@ -446,14 +477,38 @@ namespace ParttrapDev.Models
                 productStatusesRequest.IncludeInvalidInsertedItems = true;
                 productStatusesResponse = productStatusesRequest.Execute();
 
-                if (productStatusesResponse.NextPageToken != null)
+                pageToken = productStatusesResponse.NextPageToken;
+                if (productStatusesResponse.Resources != null)
                 {
-                    pageToken = productStatusesResponse.NextPageToken;
+                    allProductStatuses.AddRange(productStatusesResponse.Resources);
                 }
             }
-            while (productStatusesResponse.NextPageToken != null);
+            while (pageToken != null);
 
-            return productStatusesResponse.Resources.ToList();
+
+            //Gives page the index value, aka. If you want index 0 "page 1", you input 1 as page
+            //And it gives you the element at index 0.
+            if (page > 0)
+            {
+                page--;
+            }
+            else
+            {
+                page = 0;
+            }
+
+            if ((int)(maxResults * page) < allProductStatuses.Count)
+            {
+                allProductStatuses.RemoveRange(0, (int)(maxResults * page));
+            }
+            else
+            {
+                return null;
+                //return new List<Google.Apis.ShoppingContent.v2.Data.ProductStatus>();
+            }
+
+
+            return allProductStatuses.Take((int)maxResults).ToList();
         }
 
         /// <summary>
@@ -470,7 +525,7 @@ namespace ParttrapDev.Models
             ProductsCustomBatchResponse batchResponse = null;
             ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
             batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
-            List<Google.Apis.ShoppingContent.v2.Data.Product> productsToReturn = new List<Product>();
+            List<Google.Apis.ShoppingContent.v2.Data.Product> productsToReturn = new List<Google.Apis.ShoppingContent.v2.Data.Product>();
             
             foreach (var product in selectedProducts)
             {
@@ -505,6 +560,66 @@ namespace ParttrapDev.Models
             }
 
             return productsToReturn;
+        }
+
+        /// <summary>
+        /// Gets all the the Google Shopping products belonging to the Merchant's account.
+        /// </summary>
+        /// <returns>Returns a list of Google Shopping products</returns>
+        public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetAllProducts()
+        {
+            List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = new List<Google.Apis.ShoppingContent.v2.Data.Product>();
+            string pageToken = null;
+
+            ProductsListResponse productsResponse = null;
+            do
+            {
+                ProductsResource.ListRequest productsRequest = _service.Products.List(_merchantID);
+                productsRequest.MaxResults = 250;
+                productsRequest.PageToken = pageToken;
+                productsRequest.IncludeInvalidInsertedItems = true;
+                productsResponse = productsRequest.Execute();
+
+                pageToken = productsResponse.NextPageToken;
+                if (productsResponse.Resources != null)
+                {
+                    allProducts.AddRange(productsResponse.Resources);
+                }
+            }
+            while (pageToken != null);
+
+
+            return allProducts;
+        }
+
+        /// <summary>
+        /// Gets all the the Google Shopping productStatuses belonging to the Merchant's account.
+        /// </summary>
+        /// <returns>Returns a list of Google Shopping productStatuses</returns>
+        public List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> ProductGetAllProductStatuses()
+        {
+            List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> allProductStatuses = new List<Google.Apis.ShoppingContent.v2.Data.ProductStatus>();
+            string pageToken = null;
+
+            ProductstatusesListResponse productStatusesResponse = null;
+            do
+            {
+                ProductstatusesResource.ListRequest productStatusesRequest = _service.Productstatuses.List(_merchantID);
+                productStatusesRequest.MaxResults = 250;
+                productStatusesRequest.PageToken = pageToken;
+                productStatusesRequest.IncludeInvalidInsertedItems = true;
+                productStatusesResponse = productStatusesRequest.Execute();
+
+                pageToken = productStatusesResponse.NextPageToken;
+                if (productStatusesResponse.Resources != null)
+                {
+                    allProductStatuses.AddRange(productStatusesResponse.Resources);
+                }
+            }
+            while (pageToken != null);
+
+
+            return allProductStatuses;
         }
 
 
