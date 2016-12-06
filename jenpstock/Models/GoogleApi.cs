@@ -380,13 +380,15 @@ namespace ParttrapDev.Models
             return;
         }
 
+
         /// <summary>
-        /// Returns a list of Google Products List"<Product>"
-        /// <para>Min 1 per list, Max 250 per list</para>
+        /// Returns a list of the Merchant's Google Shopping Products
+        /// <para>Min 1 per page, Max 250 per page</para>
+        /// <para>Returns null if page doesn't exist.</para>
         /// </summary>
-        /// <param name="maxResults">Param</param>
-        /// <param name="page"></param>
-        /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.Product ></returns>
+        /// <param name="maxResults">Max result of the page you're getting. Defaults to 20</param>
+        /// <param name="page">Which page you're getting. Defaults to 1</param>
+        /// <returns>Returns a list of Google Shopping Products</returns>
         public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductsReturn(int? maxResults, int? page)
         {
             
@@ -423,6 +425,7 @@ namespace ParttrapDev.Models
 
             //Gives page the index value, aka. If you want index 0 "page 1", you input 1 as page
             //And it gives you the element at index 0.
+            //Defaults to 0, even if the the parameter 'page' is null.
             if (page > 0)
             {
                 page--;
@@ -446,13 +449,17 @@ namespace ParttrapDev.Models
             return allProducts.Take((int)maxResults).ToList();
         }
 
+
         /// <summary>
-        /// Returns a page of the merchant's Google Shopping productstatuses
-        /// <para>A productstatus can include errors and such of a product</para>
-        /// <para>Max 250 per page</para>
+        /// Returns a page of the Merchant's Google Shopping productstatuses
+        /// <para>A productstatus can include errors and ushc of a product</para>
+        /// <para>Min 1 per page, Max 250 per page</para>
+        /// <para>Returns null if page doesn't exist.</para>
         /// </summary>
-        /// <returns>Returns a List< Google.Apis.ShoppingContent.v2.Data.ProductStatus ></returns>
-        public List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> ProductStatusesReturn(int? maxResults, int? page = 1)
+        /// <param name="maxResults">Max result of the page you're getting. Defaults to 20</param>
+        /// <param name="page">Which page you're getting. Defaults to 1</param>
+        /// <returns>Returns a list of Google Shopping Products</returns>
+        public List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> ProductStatusesReturn(int? maxResults, int? page)
         {
 
             if (maxResults == null)
@@ -488,6 +495,7 @@ namespace ParttrapDev.Models
 
             //Gives page the index value, aka. If you want index 0 "page 1", you input 1 as page
             //And it gives you the element at index 0.
+            //Defaults to 0, even if the the parameter 'page' is null.
             if (page > 0)
             {
                 page--;
@@ -520,7 +528,6 @@ namespace ParttrapDev.Models
         public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetSpecificProducts(string productUrl)
         {
             JArray selectedProducts = ProductGet(productUrl);
-
 
             ProductsCustomBatchResponse batchResponse = null;
             ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
@@ -565,7 +572,7 @@ namespace ParttrapDev.Models
         /// <summary>
         /// Gets all the the Google Shopping products belonging to the Merchant's account.
         /// </summary>
-        /// <returns>Returns a list of Google Shopping products</returns>
+        /// <returns>Returns a List of Google Shopping products</returns>
         public List<Google.Apis.ShoppingContent.v2.Data.Product> ProductGetAllProducts()
         {
             List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = new List<Google.Apis.ShoppingContent.v2.Data.Product>();
@@ -595,7 +602,7 @@ namespace ParttrapDev.Models
         /// <summary>
         /// Gets all the the Google Shopping productStatuses belonging to the Merchant's account.
         /// </summary>
-        /// <returns>Returns a list of Google Shopping productStatuses</returns>
+        /// <returns>Returns a List of Google Shopping productStatuses</returns>
         public List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> ProductGetAllProductStatuses()
         {
             List<Google.Apis.ShoppingContent.v2.Data.ProductStatus> allProductStatuses = new List<Google.Apis.ShoppingContent.v2.Data.ProductStatus>();

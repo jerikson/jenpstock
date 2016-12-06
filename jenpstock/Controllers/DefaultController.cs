@@ -12,17 +12,18 @@ namespace jenpstock.Controllers
     public class DefaultController : Controller
     {
 
-        internal string Url = "";
+        internal string Url2 = "";
+        internal string Url3 = "";
 
         public ActionResult Index()
         {
             GoogleApi googleObject = new GoogleApi(113298073);
-            //googleObject.ProductDelete(Url);
-            //googleObject.ProductInsert(Url, false);
-            //googleObject.ProductUpdate(Url);
-            //List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = googleObject.ProductsReturn(2, page : 8);
-            //googleObject.ProductStatusesReturn(maxResults : 1, page : 1);
-            //List<Google.Apis.ShoppingContent.v2.Data.Product> myProduct = googleObject.ProductGetSpecificProducts(Url);
+            googleObject.ProductDelete(Url2);
+            googleObject.ProductInsert(Url2, false);
+            googleObject.ProductUpdate(Url2);
+            List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = googleObject.ProductsReturn(2, page: 8);
+            googleObject.ProductStatusesReturn(maxResults: 1, page: 1);
+            List<Google.Apis.ShoppingContent.v2.Data.Product> myProduct = googleObject.ProductGetSpecificProducts(Url2);
 
             return View();
         }
