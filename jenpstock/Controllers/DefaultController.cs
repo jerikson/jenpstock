@@ -19,13 +19,15 @@ namespace jenpstock.Controllers
         {
             GoogleApi googleObject = new GoogleApi(113298073);
             //googleObject.ProductDelete(Url2);
-            //googleObject.ProductInsert(Url2, false);
-            //googleObject.ProductUpdate(Url2);
+            //googleObject.ProductInsert(Url2, update : false);
             //List<Google.Apis.ShoppingContent.v2.Data.Product> allProducts = googleObject.ProductsReturn(2, page: 8);
             //googleObject.ProductStatusesReturn(maxResults: 1, page: 1);
             //List<Google.Apis.ShoppingContent.v2.Data.Product> myProduct = googleObject.ProductGetSpecificProducts(Url2);
 
-            return View();
+            //Integrera denna metod, ProductGetImages() i ProductInsert(). Gör bara så här för testing.
+            List<string> images = googleObject.ProductGetImages(Url2);
+
+            return View(images);
         }
 
 

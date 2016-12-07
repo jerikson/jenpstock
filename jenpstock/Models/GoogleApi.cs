@@ -73,6 +73,7 @@ namespace ParttrapDev.Models
                 catch (Exception e)
                 {
                     System.Diagnostics.Debug.WriteLine("Message: " + e.Message + "\nStacktrace: " + e.StackTrace + "\nTarget: " + e.TargetSite);
+                    System.Diagnostics.Debug.WriteLine("\n\n*DINGDING* Something is wrong in the Private ProductGet() method. The url probably isn't returning valid JSON.");
                     return null;
                 }
             }
@@ -273,65 +274,6 @@ namespace ParttrapDev.Models
         }
 
 
-        public void ProductUpdate(string productUrl)
-        {
-            JArray productsToUpdate = ProductGet(productUrl);
-            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
-            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
-
-            //foreach (var product in productsToUpdate)
-            //{
-            //    Product newProduct = new Product()
-            //    {
-            //        OfferId = product["ProductID"].ToString(),
-            //        Title = "Updated product title!",
-            //        Description = "Updated description!",
-            //        Link = "https://www.example.com/products/Product?productId=1",
-            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-            //        ContentLanguage = "sv",
-            //        TargetCountry = "SE",
-            //        Channel = "online",
-            //        Availability = "out of stock",
-            //        Condition = "new",
-            //        GoogleProductCategory = "3219",
-            //        IdentifierExists = false,
-            //        Price = new Price()
-            //        {
-            //            Currency = "SEK",
-            //            Value = "200"
-            //        }
-            //    };
-
-            //    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-            //    {
-            //        Method = "insert",
-            //        BatchId = long.Parse(newProduct.OfferId),
-            //        MerchantId = _merchantID,
-            //        Product = newProduct,
-            //    };
-
-            //    batchRequest.Entries.Add(newEntry);
-
-            //}
-
-            //try
-            //{
-            //    ProductsResource.CustombatchRequest reeeq = _service.Products.Custombatch(batchRequest);
-            //    reeeq.Execute();
-            //}
-            //catch (Exception e)
-            //{
-            //    System.Diagnostics.Debug.WriteLine("EXCEPTION THROWN @ProductInsert()");
-            //    System.Diagnostics.Debug.WriteLine("Message: " + e.Message);
-            //    System.Diagnostics.Debug.WriteLine("Stack Trace: " + e.StackTrace);
-            //    System.Diagnostics.Debug.WriteLine("Target Site: " + e.TargetSite);
-            //}
-
-            ProductInsert(productUrl, true);
-
-            return;
-        }
-
         ///<summary>
         ///Deletes products from a Google Shopping account using custombatch method to send multiple requests as one.
         ///<para>productUrl is a URI to something that returns a JSON object.</para>
@@ -520,8 +462,9 @@ namespace ParttrapDev.Models
         }
 
         /// <summary>
-        /// Returns Google Shopping Product versions of the products in the url.
+        /// Returns Google Shopping Product versions (if any) of the products in the url.
         /// <para>Takes a product url as parameter.</para>
+        /// <para>Returns null if faulty.</para>
         /// </summary>
         /// <param name="productUrl">Parameter</param>
         /// <returns>A list of google products</returns>
@@ -627,6 +570,39 @@ namespace ParttrapDev.Models
 
 
             return allProductStatuses;
+        }
+
+        public List<string> ProductGetImages(string productUrl)
+        {
+            JArray productsToPush = ProductGet(productUrl);
+
+            List<string> images = new List<string>();
+
+            //string begUrl = productUrl.Substring(0, productUrl.IndexOf('/'));
+            //int cutoffIndex = _customIndexOf(productUrl, '/', 3);
+            string begUrl = productUrl.Substring(0, _customIndexOf(productUrl, '/', 3));
+
+            foreach (var product in productsToPush)
+            {
+                string relativeUrl = product["AdditionalValues"]["ImageUrl"].ToString();
+                string fullUrl = begUrl + relativeUrl;
+                images.Add(fullUrl);
+            }
+
+            return images;
+        }
+
+        private int _customIndexOf(string source, char toFind, int position)
+        {
+            int index = -1;
+            for (int i = 0; i < position; i++)
+            {
+                index = source.IndexOf(toFind, index + 1);
+
+                if (index == -1)
+                    break;
+            }
+            return index;
         }
 
 

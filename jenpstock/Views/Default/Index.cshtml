@@ -1,4 +1,5 @@
 ﻿@using jenpstock.Controllers
+@model List<string>
 
 @{
     Layout = null;
@@ -11,6 +12,10 @@
 </head>
 <body>
     <div class="container">
+        @foreach (var image in Model)
+        {
+            <p><img src="@image" /></p>
+        }
     </div>
     <script src="~/Scripts/jquery-1.10.2.js"></script>
     <script src="~/Scripts/bootstrap.js"></script>
