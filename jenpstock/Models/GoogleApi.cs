@@ -78,33 +78,6 @@ namespace ParttrapDev.Models
                 }
             }
 
-
-            // WebRequest ska tydligen vara bättre för stora överföringar? Ska tydligen inte blocka interface 
-            // thread, men MVC har inte interface thread? Det har väl bara WPF o sånt?
-            //WebRequest version
-            //////WebRequest request = WebRequest.Create(productUrl);
-            //////Stream dataStream = request.GetResponse().GetResponseStream();
-            //////StreamReader reader = new StreamReader(dataStream);
-            //////string response = reader.ReadToEnd();
-            //////JArray jsonObj = JArray.Parse(response);
-
-
-            //HttpWebRequest version
-            //////HttpWebRequest request = (HttpWebRequest)WebRequest.Create(productUrl);
-            //////request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-            //////request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            //////request.ContentType = "application/json; charset=utf-8";
-            //////request.Method = WebRequestMethods.Http.Get;
-            //////request.Accept = "application/json";
-
-            //////HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            //////Stream dataStream = response.GetResponseStream();
-            //////StreamReader reader = new StreamReader(dataStream);
-            //////string json = reader.ReadToEnd();
-            //////JArray jsonObj = JArray.Parse(json);
-
-
             return jsonObj;
         }
 
@@ -113,133 +86,65 @@ namespace ParttrapDev.Models
         ///Inserts and/or updates products to a Google Shopping account using custombatch method to send multiple requests as one.
         ///<para>productUrl is a URI to something that returns a JSON object.</para>
         /// </summary>
-        public void ProductInsert(string productUrl, bool update)
+        public void ProductInsert(string productUrl)
         {
             JArray productsToPush = ProductGet(productUrl);
             ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
             batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
 
-            //Update boolean kommer bara existera i testing, inte i slutgiltliga version.
-            //if (update == false)
-            //{
-            //    //Insert product
-            //    foreach (var product in productsToPush)
-            //    {
-            //        Product newProduct = new Product()
-            //        {
-            //            OfferId = product["ProductID"].ToString(),
-            //            Title = "Product Title",
-            //            Description = "Product description",
-            //            Link = "https://www.example.com/products/Product?productId=1",
-            //            ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-            //            ContentLanguage = "sv",
-            //            TargetCountry = "SE",
-            //            Channel = "online",
-            //            Availability = "out of stock",
-            //            Condition = "new",
-            //            GoogleProductCategory = "3219",
-            //            IdentifierExists = false,
-            //            Price = new Price()
-            //            {
-            //                Currency = "SEK",
-            //                Value = "100"
-            //            }
-            //        };
+            string domainUrl = productUrl.Substring(0, _customIndexOf(productUrl, '/', 3));
 
-            //        ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-            //        {
-            //            Method = "insert",
-            //            BatchId = long.Parse(newProduct.OfferId),
-            //            MerchantId = _merchantID,
-            //            Product = newProduct
-            //        };
+            //Insert product
+            //////foreach (var product in productsToPush)
+            //////{
+            //////    Google.Apis.ShoppingContent.v2.Data.Product newProduct = new Google.Apis.ShoppingContent.v2.Data.Product()
+            //////    {
+            //////        OfferId = product["ProductID"].ToString(),
+            //////        Title = "Product Title",
+            //////        Description = "Product description",
+            //////        Link = "https://www.example.com/products/Product?productId=1",
+            //////        ImageLink = domainUrl + product["AdditionalValues"]["ImageUrl"].ToString(),
+            //////        ContentLanguage = "sv",
+            //////        TargetCountry = "SE",
+            //////        Channel = "online",
+            //////        Availability = "out of stock",
+            //////        Condition = "new",
+            //////        GoogleProductCategory = "3219",
+            //////        IdentifierExists = false,
+            //////        Price = new Price()
+            //////        {
+            //////            Currency = "SEK",
+            //////            Value = "100"
+            //////        }
+            //////    };
 
-            //        batchRequest.Entries.Add(newEntry);
+            //////    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+            //////    {
+            //////        Method = "insert",
+            //////        BatchId = long.Parse(newProduct.OfferId),
+            //////        MerchantId = _merchantID,
+            //////        Product = newProduct
+            //////    };
 
-            //    }
-            //}
-            //else
-            //{
-            //    //Update product
-            //    foreach (var product in productsToPush)
-            //    {
-            //        Product newProduct = new Product()
-            //        {
-            //            OfferId = product["ProductID"].ToString(),
-            //            Title = "Updated product title!",
-            //            Description = "Updated description!",
-            //            Link = "https://www.example.com/products/Product?productId=1",
-            //            ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-            //            ContentLanguage = "sv",
-            //            TargetCountry = "SE",
-            //            Channel = "online",
-            //            Availability = "out of stock",
-            //            Condition = "new",
-            //            GoogleProductCategory = "3219",
-            //            IdentifierExists = false,
-            //            Price = new Price()
-            //            {
-            //                Currency = "SEK",
-            //                Value = "200"
-            //            }
-            //        };
+            //////    batchRequest.Entries.Add(newEntry);
 
-            //        ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-            //        {
-            //            Method = "insert",
-            //            BatchId = long.Parse(newProduct.OfferId),
-            //            MerchantId = _merchantID,
-            //            Product = newProduct,
-            //        };
-
-            //        batchRequest.Entries.Add(newEntry);
-
-            //    }
-            //}
-
-
-
-
-
-
-            //        OfferId = "Unique Id",
-            //        Title = "I am a title to a product",
-            //        Description = "I am a product description.",
-            //        Link = "https://www.example.com/products/Product?productId=1",
-            //        ImageLink = "https://www.example.com/productImages/ProductImage?productId=1",
-            //        ContentLanguage = "sv",
-            //        TargetCountry = "SE",
-            //        Channel = "online",
-            //        Availability = "out of stock",
-            //        Condition = "new",
-            //        GoogleProductCategory = "3219",
-            //        IdentifierExists = false,
-            //        Currency = "SEK",
-            //        Price = "100"
-
-            // Saknade Google Attributer: 
-            // Title, ContentLanguage, TargetCountry,
-            // Availability, Condition, GoogleProductCategory, 
-            //--------------------------------------------------------------------------
-            //GÖRA EFTER LUNCH:
-            //Mappa och skriva ut dem attributer jag kan här.
-            //Sen implementera dem i riktiga insert ovanför.
+            //////}
 
 
             foreach (var product in productsToPush)
             {
                 //Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
-                Debug.WriteLine("Type: " + product.Type);
-                Debug.WriteLine("Product Values: " + product.Values());
+                //////Debug.WriteLine("Type: " + product.Type);
+                //////Debug.WriteLine("Product Values: " + product.Values());
                 
 
-                Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
-                Debug.WriteLine("Description: " + product["Description"].ToString());
-                Debug.WriteLine("Price, incl VAT: " + product["NetPriceInclVAT"]["Amount"].ToString());
-                Debug.WriteLine("Currency: " + product["NetPriceInclVAT"]["Currency"]["Code"].ToString());
-                Debug.WriteLine("Product Page Link: " + product["AdditionalValues"]["DetailLink"].ToString());
-                Debug.WriteLine("Image Link: " + product["AdditionalValues"]["ImageUrl"].ToString());
-                //Crashar på dessa jag har lagt in:
+                //////Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
+                //////Debug.WriteLine("Description: " + product["Description"].ToString());
+                //////Debug.WriteLine("Price, incl VAT: " + product["NetPriceInclVAT"]["Amount"].ToString());
+                //////Debug.WriteLine("Currency: " + product["NetPriceInclVAT"]["Currency"]["Code"].ToString());
+                //////Debug.WriteLine("Product Page Link: " + product["AdditionalValues"]["DetailLink"].ToString());
+                //////Debug.WriteLine("Image Link: " + product["AdditionalValues"]["ImageUrl"].ToString());
+
                 if (product["AdditionalValues"]["ProductTextField1"] != null)
                     Debug.WriteLine("CHECK DIS 1: " + product["AdditionalValues"]["ProductTextField1"].ToString());
                 if (product["AdditionalValues"]["ProductTextField2"] != null)
@@ -249,11 +154,6 @@ namespace ParttrapDev.Models
                 if (product["ProductFieldsTexts"] != null)
                     Debug.WriteLine("PLEASE WORK: " + product["ProductFieldsTexts"].ToString());
 
-                //Debug.WriteLine(product[].ToString());
-                //Debug.WriteLine(product[].ToString());
-                //Debug.WriteLine(product[].ToString());
-                //Debug.WriteLine(product[].ToString());
-                //break;
             }
 
 
@@ -572,30 +472,11 @@ namespace ParttrapDev.Models
             return allProductStatuses;
         }
 
-        public List<string> ProductGetImages(string productUrl)
-        {
-            JArray productsToPush = ProductGet(productUrl);
-
-            List<string> images = new List<string>();
-
-            //string begUrl = productUrl.Substring(0, productUrl.IndexOf('/'));
-            //int cutoffIndex = _customIndexOf(productUrl, '/', 3);
-            string begUrl = productUrl.Substring(0, _customIndexOf(productUrl, '/', 3));
-
-            foreach (var product in productsToPush)
-            {
-                string relativeUrl = product["AdditionalValues"]["ImageUrl"].ToString();
-                string fullUrl = begUrl + relativeUrl;
-                images.Add(fullUrl);
-            }
-
-            return images;
-        }
-
-        private int _customIndexOf(string source, char toFind, int position)
+        //Returns the index +1 of the x:th occurance of a char.
+        private int _customIndexOf(string source, char toFind, int occurrence)
         {
             int index = -1;
-            for (int i = 0; i < position; i++)
+            for (int i = 0; i < occurrence; i++)
             {
                 index = source.IndexOf(toFind, index + 1);
 
