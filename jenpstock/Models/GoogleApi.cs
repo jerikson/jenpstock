@@ -95,40 +95,41 @@ namespace ParttrapDev.Models
             string domainUrl = productUrl.Substring(0, _customIndexOf(productUrl, '/', 3));
 
             //Insert product
-            //////foreach (var product in productsToPush)
-            //////{
-            //////    Google.Apis.ShoppingContent.v2.Data.Product newProduct = new Google.Apis.ShoppingContent.v2.Data.Product()
-            //////    {
-            //////        OfferId = product["ProductID"].ToString(),
-            //////        Title = "Product Title",
-            //////        Description = "Product description",
-            //////        Link = "https://www.example.com/products/Product?productId=1",
-            //////        ImageLink = domainUrl + product["AdditionalValues"]["ImageUrl"].ToString(),
-            //////        ContentLanguage = "sv",
-            //////        TargetCountry = "SE",
-            //////        Channel = "online",
-            //////        Availability = "out of stock",
-            //////        Condition = "new",
-            //////        GoogleProductCategory = "3219",
-            //////        IdentifierExists = false,
-            //////        Price = new Price()
-            //////        {
-            //////            Currency = "SEK",
-            //////            Value = "100"
-            //////        }
-            //////    };
+            foreach (var product in productsToPush)
+            {
+                Google.Apis.ShoppingContent.v2.Data.Product newProduct = new Google.Apis.ShoppingContent.v2.Data.Product()
+                {
+                    OfferId = product["ProductID"].ToString(),
+                    Title = "Product Title",
+                    Description = "Product description",
+                    Link = "https://www.example.com/products/Product?productId=1",
+                    ImageLink = domainUrl + product["AdditionalValues"]["ImageUrl"].ToString(),
+                    ContentLanguage = "sv",
+                    TargetCountry = "SE",
+                    Channel = "online",
+                    Availability = "out of stock",
+                    Condition = "new",
+                    GoogleProductCategory = "3219",
+                    IdentifierExists = false,
+                    Price = new Price()
+                    {
+                        Currency = "SEK",
+                        Value = "100"
+                    }
+                };
 
-            //////    ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
-            //////    {
-            //////        Method = "insert",
-            //////        BatchId = long.Parse(newProduct.OfferId),
-            //////        MerchantId = _merchantID,
-            //////        Product = newProduct
-            //////    };
+                ProductsCustomBatchRequestEntry newEntry = new ProductsCustomBatchRequestEntry()
+                {
+                    Method = "insert",
+                    BatchId = long.Parse(newProduct.OfferId),
+                    MerchantId = _merchantID,
+                    Product = newProduct
+                };
 
-            //////    batchRequest.Entries.Add(newEntry);
+                batchRequest.Entries.Add(newEntry);
 
-            //////}
+            }
+
 
 
             foreach (var product in productsToPush)
@@ -136,7 +137,7 @@ namespace ParttrapDev.Models
                 //Debug.WriteLine("WOAH SETTLE DOWN, HOMEBOY: " + product);
                 //////Debug.WriteLine("Type: " + product.Type);
                 //////Debug.WriteLine("Product Values: " + product.Values());
-                
+
 
                 //////Debug.WriteLine("OfferId: " + product["ProductID"].ToString());
                 //////Debug.WriteLine("Description: " + product["Description"].ToString());

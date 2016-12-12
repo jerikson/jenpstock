@@ -13,7 +13,6 @@ namespace jenpstock.Controllers
     {
 
         internal string Url2 = "";
-        internal string Url3 = "";
 
         public ActionResult Index()
         {
