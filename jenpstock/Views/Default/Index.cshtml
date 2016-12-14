@@ -1,5 +1,5 @@
 ﻿@using jenpstock.Controllers
-@model List<string>
+@model List<Google.Apis.ShoppingContent.v2.Data.Product>
 
 @{
     Layout = null;
@@ -12,9 +12,9 @@
 </head>
 <body>
     <div class="container">
-        @foreach (var image in Model)
+        @foreach (var product in Model)
         {
-            <p><img src="@image" /></p>
+            <p><img src="@product.ImageLink" /></p>
         }
     </div>
     <script src="~/Scripts/jquery-1.10.2.js"></script>

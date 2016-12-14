@@ -19,8 +19,10 @@ namespace ParttrapDev.Models
         private UserCredential _credential;
         private ShoppingContentService _service;
         private ulong _merchantID;
-        private string _clientId = "896777409399-ghva93bgs7qpv293tqj1vp4eefi7n82c.apps.googleusercontent.com";
-        private string _clientSecret = "Or7cg3mMtWmMsxIhBjecHcRq";
+        //private string _clientId = "896777409399-ghva93bgs7qpv293tqj1vp4eefi7n82c.apps.googleusercontent.com";
+        //private string _clientSecret = "Or7cg3mMtWmMsxIhBjecHcRq";
+        private string _clientId = "134786682471-b2nh5tpgcq06r9nqpanmnpi027t3aunh.apps.googleusercontent.com";
+        private string _clientSecret = "nZiPHZYfF_LDpxqijfToD_oe";
 
 
         public GoogleApi(ulong merchantID)
@@ -471,6 +473,20 @@ namespace ParttrapDev.Models
 
 
             return allProductStatuses;
+        }
+
+        public bool CheckIfNextPageExists(int? maxResults, int? page)
+        {
+            List<Google.Apis.ShoppingContent.v2.Data.Product> l = ProductsReturn(maxResults, page + 1);
+
+            if (l == null || l.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         //Returns the index +1 of the x:th occurance of a char.
